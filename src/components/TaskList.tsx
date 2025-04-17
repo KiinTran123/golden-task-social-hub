@@ -4,7 +4,6 @@ import { Task } from '@/types';
 import TaskItem from './TaskItem';
 import { useTaskStore } from '@/store/taskStore';
 import TaskDetailModal from './TaskDetailModal';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const TaskList = () => {
   const { tasks } = useTaskStore();
@@ -21,61 +20,39 @@ const TaskList = () => {
 
   return (
     <div>
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="all">All ({tasks.length})</TabsTrigger>
-          <TabsTrigger value="pending">Pending ({pendingTasks.length})</TabsTrigger>
-          <TabsTrigger value="completed">Completed ({completedTasks.length})</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="all">
-          {tasks.length > 0 ? (
-            tasks.map(task => (
-              <TaskItem 
-                key={task.id} 
-                task={task} 
-                onSelect={handleSelectTask} 
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              No tasks yet. Create one to get started!
+      {tasks.length > 0 ? (
+        <div>
+          {pendingTasks.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-gray-500 mb-2">Pending Tasks ({pendingTasks.length})</h3>
+              {pendingTasks.map(task => (
+                <TaskItem 
+                  key={task.id} 
+                  task={task} 
+                  onSelect={handleSelectTask} 
+                />
+              ))}
             </div>
           )}
-        </TabsContent>
-        
-        <TabsContent value="pending">
-          {pendingTasks.length > 0 ? (
-            pendingTasks.map(task => (
-              <TaskItem 
-                key={task.id} 
-                task={task} 
-                onSelect={handleSelectTask} 
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              No pending tasks.
+          
+          {completedTasks.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-gray-500 mb-2">Completed Tasks ({completedTasks.length})</h3>
+              {completedTasks.map(task => (
+                <TaskItem 
+                  key={task.id} 
+                  task={task} 
+                  onSelect={handleSelectTask} 
+                />
+              ))}
             </div>
           )}
-        </TabsContent>
-        
-        <TabsContent value="completed">
-          {completedTasks.length > 0 ? (
-            completedTasks.map(task => (
-              <TaskItem 
-                key={task.id} 
-                task={task} 
-                onSelect={handleSelectTask} 
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              No completed tasks.
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          No tasks yet. Create one to get started!
+        </div>
+      )}
 
       {selectedTask && (
         <TaskDetailModal
