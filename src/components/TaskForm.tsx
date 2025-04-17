@@ -51,7 +51,7 @@ const TaskForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6 space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Input
           type="text"
@@ -116,7 +116,7 @@ const TaskForm = () => {
         <Button 
           type="submit" 
           disabled={!title.trim()}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
         >
           Add Task
         </Button>

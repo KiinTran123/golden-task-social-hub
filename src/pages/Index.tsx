@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useTaskStore } from '@/store/taskStore';
 
 const Index = () => {
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true); // Always show the form by default
   const { fetchTasks, loading } = useTaskStore();
 
   useEffect(() => {
@@ -26,34 +26,44 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto py-6 px-4 sm:px-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="mb-6 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-primary" />
-              My Tasks
-            </h2>
-            <Button
-              onClick={() => setShowForm(!showForm)}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1"
-            >
-              {showForm ? 'Hide Form' : (
-                <>
-                  <PlusCircle className="h-4 w-4" />
-                  New Task
-                </>
-              )}
-            </Button>
-          </div>
+        <div className="mb-6 flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-primary" />
+            My Tasks
+          </h2>
+          <Button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1 md:hidden"
+          >
+            {showForm ? 'Hide Form' : (
+              <>
+                <PlusCircle className="h-4 w-4" />
+                New Task
+              </>
+            )}
+          </Button>
+        </div>
 
-          {showForm && <TaskForm />}
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent"></div>
-              <p className="mt-2 text-gray-600">Loading tasks...</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Task Form Column - Left Side */}
+          <div className={`${showForm ? 'block' : 'hidden md:block'} md:col-span-1`}>
+            <div className="bg-white p-4 rounded-lg shadow-sm border">
+              <h3 className="text-sm font-medium text-gray-500 mb-4">Add New Task</h3>
+              <TaskForm />
             </div>
-          ) : (
-            <TaskList />
-          )}
+          </div>
+          
+          {/* Task Lists Column - Right Side */}
+          <div className="md:col-span-2">
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent"></div>
+                <p className="mt-2 text-gray-600">Loading tasks...</p>
+              </div>
+            ) : (
+              <TaskList />
+            )}
+          </div>
         </div>
       </main>
 
