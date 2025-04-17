@@ -1,12 +1,18 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CheckSquare, PlusCircle, CheckCircle } from 'lucide-react';
 import TaskForm from '@/components/TaskForm';
 import TaskList from '@/components/TaskList';
 import { Button } from '@/components/ui/button';
+import { useTaskStore } from '@/store/taskStore';
 
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
+  const { fetchTasks, loading } = useTaskStore();
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,7 +46,14 @@ const Index = () => {
           </div>
 
           {showForm && <TaskForm />}
-          <TaskList />
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent"></div>
+              <p className="mt-2 text-gray-600">Loading tasks...</p>
+            </div>
+          ) : (
+            <TaskList />
+          )}
         </div>
       </main>
 
