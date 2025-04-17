@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Task } from '@/types';
-import { Check, X, MessageSquare, Share2, Image, Edit, Trash } from 'lucide-react';
+import { Check, X, MessageSquare, Share2, Image, Edit, Trash, CheckCircle2 } from 'lucide-react';
 import { 
   Card, 
   CardContent, 
@@ -15,6 +15,7 @@ import { useTaskStore } from '@/store/taskStore';
 import { formatDistanceToNow } from 'date-fns';
 import TaskEditModal from './TaskEditModal';
 import ShareTaskModal from './ShareTaskModal';
+import { toast } from '@/hooks/use-toast';
 
 interface TaskItemProps {
   task: Task;
@@ -25,6 +26,26 @@ const TaskItem = ({ task, onSelect }: TaskItemProps) => {
   const { toggleComplete, deleteTask } = useTaskStore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
+
+  const handleToggleComplete = async () => {
+    setIsToggling(true);
+    try {
+      await toggleComplete(task.id);
+      toast({
+        title: task.completed ? "Task marked as pending" : "Task marked as completed",
+        description: `"${task.title}" has been ${task.completed ? "moved back to pending" : "marked as done"}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update task status",
+        variant: "destructive"
+      });
+    } finally {
+      setIsToggling(false);
+    }
+  };
 
   return (
     <>
@@ -33,12 +54,21 @@ const TaskItem = ({ task, onSelect }: TaskItemProps) => {
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
               <Button 
-                variant="outline" 
+                variant={task.completed ? "outline" : "secondary"}
                 size="icon" 
-                className={`h-6 w-6 ${task.completed ? 'bg-green-100 text-green-600' : ''}`}
-                onClick={() => toggleComplete(task.id)}
+                className={`h-8 w-8 transition-colors duration-200 ${
+                  task.completed 
+                    ? 'bg-green-100 text-green-600 hover:bg-green-200' 
+                    : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                }`}
+                onClick={handleToggleComplete}
+                disabled={isToggling}
               >
-                {task.completed ? <Check className="h-4 w-4" /> : null}
+                {isToggling ? (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                  <CheckCircle2 className={`h-5 w-5 ${task.completed ? 'fill-green-500' : ''}`} />
+                )}
               </Button>
               <CardTitle 
                 className={`text-lg ${task.completed ? 'line-through text-gray-500' : ''}`}
@@ -92,9 +122,13 @@ const TaskItem = ({ task, onSelect }: TaskItemProps) => {
               Share
             </Button>
           </div>
-          {task.completed && (
+          {task.completed ? (
             <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
               Completed
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="text-gray-600 hover:bg-gray-100">
+              Pending
             </Badge>
           )}
         </CardFooter>
